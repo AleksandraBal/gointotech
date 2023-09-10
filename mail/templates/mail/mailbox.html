@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}<title>Mailbox</title>{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+
+        <div class="col-3">
+            <div class="row my-3">
+                <h3 class="text-secondary">Start a new thread</h3>
+                <p class="font-italic">Click on a username to start a new chat</p>
+            </div>
+            <div class="dropdown mt-3">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" 
+                aria-haspopup="true" aria-expanded="false">Select a user</button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                {% for user in users %}
+                    <a class="dropdown-item" href="{% url 'thread' user.username %}"> <img src="{{ user.profile.image.url }}" 
+                    alt="{{user.username}}" class="img-thumbnail mr-2" width="60" height="100">{{user.username}}</a>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-9">
+            <div class="row my-3">
+                <h3 class="text-secondary">Your conversations</h3>
+            </div>
+            {% for thread in threads %}
+            {% if thread.sender == request.user %}
+            <div class='row mb-3 border border-secondary bg-white' >  
+                <div class="col-1 p-2"> 
+                    <img src="{{ thread.receiver.profile.image.url }}" alt="{{thread.receiver.username}}"  
+                    class="img-thumbnail" width="60" height="100">
+                </div> 
+                <div class="col-9 p-2">
+                    <a href="{% url 'thread' thread.receiver.username %}"><h3>{{ thread.receiver.username }}</h3></a>
+                    {% if thread.get_messages_no > 0 %}
+                    <p class="text-secondary mb-0">Last message: {{thread.get_last_message_date|date:"j M y - g:i a" }}</p>
+                    <p class="text-dark">{{thread.get_last_message}}...</p>
+                    {% else %}
+                    <p class="text-secondary">No messages in this thread</p>
+                    {% endif %}
+                </div>
+                <div class="col-2 p-2"> 
+                    <a class="btn btn-outline-danger btn-sm" href="{% url 'delete_thread' thread.pk %}" role="button">Delete thread</a>
+                </div> 
+            </div>
+
+            {% elif thread.receiver == request.user %}
+            <div class='row mb-3 border border-secondary bg-white'>
+                <div class="col-1 p-2">    
+                    <img src="{{ thread.sender.profile.image.url }}" alt="{{thread.sender.username}}"  
+                    class="img-thumbnail" width="60" height="100">
+                </div>
+                <div class="col-9 p-2"> 
+                    <a href="{% url 'thread' thread.sender.username %}"><h3>{{ thread.sender.username }}</h3></a>
+                    {% if thread.get_messages_no > 0 %}
+                    <p class="text-secondary mb-0">Last message: {{thread.get_last_message_date|date:"j M y - g:i a" }}</p>
+                    <p class="text-dark">{{thread.get_last_message}} ...</p>
+                    {% else %}
+                    <p class="text-secondary">No messages in this thread</p>
+                    {% endif %}
+                </div>
+                <div class="col-2 p-2"> 
+                    <a class="btn btn-outline-danger btn-sm" href="{% url 'delete_thread' thread.pk %}" role="button">Delete thread</a>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+{% endblock content %}

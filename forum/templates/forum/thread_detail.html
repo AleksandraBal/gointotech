@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}<title>Forum thread</title>{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <h1 class="text-primary mt-4 mb-3">{{ thread.title }}</h1>
+    </div>
+
+
+    {% if thread.posts.all.count == 0 %}
+    <div class="row my-5">
+      <div class="col">
+        <h4>No posts in this thread yet.</h4>
+      </div>
+    </div>
+    {% else %}
+    {% for post in posts %}
+    <div class="row mb-3 bg-white">
+        <div class="col-2">
+            <p class="font-weight-bold mb-0">{{ post.author }}</p>
+            <p class="text-secondary">{{ post.created }}</p>
+        </div>
+        <div class="col-8"><p>{{ post.body }}</p></div>
+        <div class="col-2 my-2">
+            <p>{{post.get_like_no}} <a href="{% url 'forum:like' post.id %}"><i class="fa fa-thumbs-up" style="font-size:24px"></i></a></p>
+            {% if request.user == post.author %}
+            <a class="btn btn-outline-warning btn-sm mb-2" href="{% url 'forum:edit_post' post.id %}" role="button">Edit</a>
+            <a class="btn btn-outline-danger btn-sm mb-2" href="{% url 'forum:delete_post' post.id %}" role="button">Delete</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <div class="col">
+            <form method="POST">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <input class="btn btn-primary mb-3" type="submit" value="Save">
+                <a class="btn btn-warning ml-2 mb-3" href="{% url 'forum:thread_list' %}">Cancel</a>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}

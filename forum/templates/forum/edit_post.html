@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}<title>Forum thread</title>{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <p class="h1 text-primary mt-4 mb-3">{{ thread.title }}</p>
+    </div>
+
+
+    {% if thread.posts.all.count == 0 %}
+    <div class="row my-5">
+      <div class="col">
+        <p>No posts in this thread.</p>
+      </div>
+    </div>
+    {% endif %}
+
+    {% for post in posts %}
+    <div class="row mb-3 bg-white">
+        <div class="col-3">
+            <p class="font-weight-bold mb-0">{{ post.author }}</p>
+            <p class="text-secondary">{{ post.created }}</p>
+        </div>
+        <div class="col-8"><p>{{ post.body }}</p></div>
+        <div class="col-1 my-2">
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="row">
+        <div class="col">
+            <form method="POST" action="{% url 'forum:edit_post' edited_post.pk %}">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button class="btn btn-primary" type="submit">Save</button>
+                <a class="btn btn-warning" href="{% url 'forum:thread_detail' thread.id %}" role="button">Cancel</a>
+            </form>
+        </div>
+      </div>
+
+</div>
+{% endblock content %}
