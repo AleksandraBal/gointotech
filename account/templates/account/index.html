@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+<title>Gointo.tech</title>
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <p class="display-3 text-primary text-center font-weight-bold">Start your IT career today</p> 
+    </div>
+    <div class="row justify-content-center mt-5">
+        <div class="col-4">
+            <div class="row justify-content-center"><img src="{% static "images/ican.jpg" %}" alt="i can" width="280" height="200"  class="rounded-3 shadow"></div>
+            <div class="row my-3 font-weight-bold h3 justify-content-center text-secondary">Find your career path</div>
+            <div class="row px-5 justify-content-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi</div>
+        </div>
+        <div class="col-4">
+            <div class="row justify-content-center"><img src="{% static "images/puzzle.jpg" %}" alt="puzzle" width="280" height="200"  class="rounded-3 shadow"></div>
+            <div class="row my-3 font-weight-bold h3 justify-content-center text-secondary">Leverage peer learning</div>
+            <div class="row px-5 justify-content-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi</div>
+        </div>
+        <div class="col-4 justify-content-center">
+            <div class="row justify-content-center"><img src="{% static "images/monitor.jpg" %}" alt="monitor" width="280" height="200"  class="rounded-3 shadow"></div>
+            <div class="row my-3 font-weight-bold h3 justify-content-center text-secondary">Switch to your dream job</div>
+            <div class="row px-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi</div>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}

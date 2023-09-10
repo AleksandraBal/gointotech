@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}<title>User page</title>{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <p class="h1 text-primary mt-4">{{other_user.username}}'s profile page</p>
+  </div>  
+
+  <div class="row my-4">
+    <div class="col-3">
+      <img src="{{ other_user.profile.image.url }}" alt="{{other_user.username}}" class="img-thumbnail"> 
+    </div>    
+    <div class="col-9">
+      <table class="table table-hover">
+        <tr>
+          <th scope="row" style="width: 20%">Username:</th>
+          <td>{{other_user.username}}</td>
+        </tr>
+        <tr>
+          <th scope="row">Location:</th>
+          <td>{{other_user.profile.location}}</td>
+        </tr>
+        <tr>
+        <tr>
+          <th scope="row">Current job:</th>
+          <td>{{other_user.profile.current_job}}</td>
+        </tr>
+        <tr>
+          <th scope="row">Switching to:</th>
+          <td>{{other_user.profile.switching_to}}</td>
+        </tr>
+        <tr>
+          <th scope="row">Following:</th>
+          <td>{{number_contacts}}</td>
+        </tr>
+      </table>      
+    </div>
+</div>
+
+<ul class="nav nav-tabs">
+  <li class="nav-item ">
+    <a class="nav-link tablinks active" onclick="openTab(event, 'MyCareer')" id="defaultOpen" >My Career</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link tablinks" onclick="openTab(event, 'CareerAdvice')" >Career Advice</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link tablinks" onclick="openTab(event, 'Questions')" >Questions</a>
+  </li>
+</ul>
+
+
+<!-- Tab content -->
+<div id="MyCareer" class="tabcontent">
+  {% if other_user.profile.bio %}
+  <div class="row my-3 mx-3">{{other_user.profile.bio}}</div>
+  {% else %}
+  <div class="row my-3 mx-3">This user has not provided any career information yet.</div>
+  {% endif %}
+</div>
+
+<div id="CareerAdvice" class="tabcontent">
+  {% if other_user.profile.career_advice %}
+  <div class="row my-3 mx-3">{{other_user.profile.career_advice}}</div>
+  {% else %}
+  <div class="row my-3 mx-3">This user has not provided any career advice yet.</div>
+  {% endif %}  
+</div>
+
+<div id="Questions" class="tabcontent">
+  {% if request.user != other_user %}
+  <div class="row mt-3"> 
+
+    <div class="col-2 text-center">
+      <img src="{{ request.user.profile.image.url }}" alt="{{request.user..username}}"  
+                class="img-thumbnail" width="80" height="150">
+      <p >{{request.user.username}}</p> 
+    </div>
+
+    <div class="col-8">
+        <form action="{% url 'ask' other_user.username %}" method="post">
+          {% csrf_token %}
+          {{ form.text }}
+          <!-- <input type="hidden" name="asker" value="{{ request.user }}">
+          <input type="hidden" name="respondent" value="{{ other_user }}"> -->
+          <input type="submit" class="btn btn-primary btn-sm mt-2 mb-2" value="Post">
+        </form>
+    </div>
+
+  </div>
+  {% endif %}
+
+  {% for question in questions %}  
+  <div class="row mt-3">
+      <div class="col-2 text-center">
+          <img src="{{ question.asker.profile.image.url }}" alt="{{question.asker.username}}"  
+                class="img-thumbnail" width="80" height="150">
+          <p >{{question.asker.username}}</p> 
+      </div>
+      <div class="col-10 ">
+
+        <div class="row">
+          <div class="col-8">
+            <p class="mb-0">{{question.text}}</dp>
+            <p class="mb-1 text-secondary font-weight-light font-italic">Posted: {{question.posted}}</p>  
+          </div>
+          <div class="col-2">
+            {% if question.asker == request.user or question.respondent == request.user %}
+            <a class="d-inline btn btn-outline-danger btn-sm" href="{% url 'delete_question' question.id %}" role="button">Delete question</a> 
+            {% endif %}  
+          </div>
+        </div>
+        
+        
+        <div class="row"> 
+          <div class="col-8">
+            {% for answer in answers %}
+              {% if answer.question.id == question.id %}
+                <p class="mb-0 mt-2"><span class="font-weight-bold">{{answer.question.respondent}}:</span> {{answer.text}}</p>
+                <p class="text-secondary font-weight-light font-italic">Posted: {{answer.posted}}</p>  
+              {% endif %}
+            {% endfor %}  
+
+            
+          </div>
+          <div class="col-2">
+            {% for answer in answers %}
+            {% if answer.question.respondent == request.user and answer.question.id == question.id %}
+            <a class="btn btn-outline-danger mr-2 btn-sm mb-1" href="{% url 'delete_answer' answer.id %}">Delete answer</a>
+            {% endif %} 
+            {% endfor %}
+          </div>
+              
+        </div>
+    
+
+      </div>
+
+
+  </div>
+  {% endfor %}
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+</div>
+<script>
+  // Get the element with id="defaultOpen" and click on it
+document.getElementById("defaultOpen").click();
+
+
+  function openTab(evt, tabName) {
+  // Declare all variables
+  var i, tabcontent, tablinks;
+
+  // Get all elements with class="tabcontent" and hide them
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  // Get all elements with class="tablinks" and remove the class "active"
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  // Show the current tab, and add an "active" class to the button that opened the tab
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+</script>
+{% endblock %}
+

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}<title>Edit your profile</title>{% endblock %}
+{% block content %}
+<div class="container">
+  <p class="h1 text-primary mt-4 mb-3">Edit your profile</p>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ user_form|crispy }}
+    {{ profile_form|crispy }}
+    <input class="btn btn-primary mb-3" type="submit" value="Save">
+    <a class="btn btn-primary ml-3 mb-3" href="{% url 'profile' %}" role="button">Cancel</a>
+  </form>
+
+
+</div>
+{% endblock %}

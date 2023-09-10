@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}<title>User List</title>{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row mt-4 mb-3">
+  <p class="h1 text-primary">User List</p>
+  </div>
+
+  <div class="row mb-5">
+  <form action="{% url 'search_users' %}" class="d-inline-flex" role="search">
+    <input name="q" class="form-control" type="search" placeholder="Search users" aria-label="Search">
+    <button class="btn btn-primary ml-4" type="submit">Search</button>
+  </form>
+  </div>
+
+{% if not users %}
+      <br /><br />
+      <h2><i>No such users found!</i></h2>
+{% else %}
+<div class="d-block">
+    {% for user in users %}
+    <div class="row mb-4">
+      <div class="col-2">
+        <img src="{{ user.profile.image.url }}" alt="{{user.username}}" class="img-thumbnail"> 
+      </div>
+      <div class="col-10">
+        <p class="h3">{{user.username}}</p>
+        <p class="mb-2 font-italic">{{user.profile.location}}</p>
+        <p class="mb-1">Currently working as <span class="font-weight-bold">{{user.profile.current_job}}</span></p>
+        <p> Switching to <span class="font-weight-bold">{{user.profile.switching_to}}</span></p>
+        {% if profile not in following %}
+        <a class="btn btn-primary mr-2" href="{% url 'follow' user.username %}">Follow</a>
+        <a class="btn btn-primary mr-2" href="{% url 'user_detail' profile.user.username %}">View profile</a>
+        {% else %}
+        <a class="btn btn-outline-primary mr-2" href="{% url 'unfollow' user.username %}">Unfollow</a>
+        <a class="btn btn-primary mr-2" href="{% url 'user_detail' profile.user.username %}">View profile</a>
+        {% endif %}
+      </div>  
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+ 
+</div>
+{% endblock %}

@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}<title>Profile</title>{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+
+  <div class="row">
+    <p class="h1 text-primary mt-4 mb-3">My profile</p>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <img src="{{ request.user.profile.image.url }}" alt="{{request.user.username}}" class="img-thumbnail"> 
+        <div class="d-inline-flex mt-4 mb-2">
+          <a class="btn btn-primary mr-2 btn-sm" href="{% url 'edit_profile' %}" role="button">Edit profile</a>
+          <!-- <a class="btn btn-danger btn-sm" href="{% url 'delete_profile' %}" role="button">Delete profile</a> -->
+          <a class="btn btn-danger btn-sm text-white" data-toggle="modal" data-target="#exampleModal" role="button">Delete profile</a>
+        </div>
+        <a class="btn btn-secondary btn-sm" href="{% url 'password_change' %}" role="button">Change password</a>
+        
+      </div>    
+      <div class="col-9">
+        <table class="table table-hover">
+          <tr>
+            <th scope="row" style="width: 20%">Username:</th>
+            <td>{{request.user.username}}</td>
+          </tr>
+          <tr>
+            <th scope="row">First name:</th>
+            <td>{{request.user.first_name}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Last name:</th>
+            <td>{{request.user.last_name}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Location:</th>
+            <td>{{request.user.profile.location}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Email:</th>
+            <td>{{request.user.email}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Date of birth:</th>
+            <td>{{request.user.profile.date_of_birth}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Current job:</th>
+            <td>{{request.user.profile.current_job}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Switching to:</th>
+            <td>{{request.user.profile.switching_to}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Follows</th>
+            <td>{{number_followers}} users</td>
+          </tr>
+        </table>      
+      </div>
+  </div>
+
+<ul class="nav nav-tabs">
+  <li class="nav-item ">
+    <a class="nav-link tablinks active" onclick="openTab(event, 'MyCareer')" id="defaultOpen" >My Career</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link tablinks" onclick="openTab(event, 'CareerAdvice')" >Career Advice</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link tablinks" onclick="openTab(event, 'Questions')" >Questions</a>
+  </li>
+</ul>
+
+
+<!-- Tab content -->
+<div id="MyCareer" class="tabcontent">
+  {% if request.user.profile.bio %}
+  <div class="row my-3 mx-3">{{request.user.profile.bio}}</div>
+  {% else %}
+  <div class="row my-3 mx-3">
+    <p>You have not provided any career information yet. <br>
+    Edit your profile to add career information.</p>
+  </div>
+  {% endif %}
+</div>
+
+<div id="CareerAdvice" class="tabcontent">
+  {% if request.user.profile.career_advice %}
+  <div class="row my-3 mx-3">{{request.user.profile.career_advice}}</div>
+  {% else %}
+  <div class="row my-3 mx-3">
+    <p>You have not provided any career advice yet. <br>
+    Edit your profile to add career advice.</p>
+  </div>
+  {% endif %}  
+</div>
+
+<div id="Questions" class="tabcontent">
+ 
+
+
+  {% if questions %}
+  <div class="d-block">
+    {% for question in questions %}  
+    <div class="row mt-3">
+      <div class="col-2 text-center">
+        <img src="{{ question.asker.profile.image.url }}" alt="{{question.asker.username}}"  
+                  class="img-thumbnail" width="80" height="150">
+        <p >{{question.asker.username}}</p> 
+      </div>
+
+      <div class="col-10 ">
+        <div class="row">
+          <div class="col-8">
+            <p class="mb-0">{{question.text}}</dp>
+            <p class="mb-1 text-secondary font-weight-light font-italic">Posted: {{question.posted}}</p>  
+          </div>
+          <div class="col-2">
+            {% if question.respondent == request.user %}
+            <a class="d-inline btn btn-outline-danger btn-sm" href="{% url 'delete_question' question.id %}" role="button">Delete question</a> 
+            {% endif %}  
+          </div>
+        </div>
+
+        <div class="row">
+          
+          <div class="col-8">
+          {% for answer in answers %}
+              {% if answer.question.id == question.id %}
+                <p class="mb-0 mt-2"><span class="font-weight-bold">{{answer.question.respondent}}:</span> {{answer.text}}</p>
+                <p class="text-secondary font-weight-light font-italic">Posted: {{answer.posted}}</p>  
+              {% endif %}
+          {% endfor %}
+          
+          {% if question.respondent == request.user %} 
+                  <form action="{% url 'answer' question.id %}" method="POST">
+                    {% csrf_token %}
+                    {{ form.text }}
+                    <!-- {{ form.question.as_hidden}} -->
+                    <!-- <input type="hidden" id="question" name="question" value="{{ question.id }}"> -->
+                    <input type="submit" class="btn btn-primary btn-sm d-block mt-2" value="Post">
+                  </form>
+          {% endif %}    
+            
+          </div>
+          <div class="col-2">
+          {% for answer in answers %}
+            {% if answer.question.respondent == request.user and answer.question.id == question.id %}
+            <a class="btn btn-outline-danger mr-2 btn-sm mb-1" href="{% url 'delete_answer' answer.id %}">Delete answer</a>
+            {% endif %} 
+            {% endfor %}   
+          </div>
+           
+        </div>
+
+
+                
+
+               
+
+
+      </div>
+    
+    </div>
+    {% endfor %}
+    </div> 
+
+  {% else %}
+  <div class="row my-3 mx-3">You have not been asked any questions yet.</div>
+  {% endif %}
+</div>
+
+
+
+
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Delete profile</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Do you really want to delete your account? </br>Please note that you cannot undo this action.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Keep profile</button>
+        <a class="btn btn-danger" href="{% url 'delete_profile' %}" role="button">Delete profile</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  // Get the element with id="defaultOpen" and click on it
+document.getElementById("defaultOpen").click();
+
+
+  function openTab(evt, tabName) {
+  // Declare all variables
+  var i, tabcontent, tablinks;
+
+  // Get all elements with class="tabcontent" and hide them
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  // Get all elements with class="tablinks" and remove the class "active"
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  // Show the current tab, and add an "active" class to the button that opened the tab
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+</script>
+{% endblock %}
+
+
+
