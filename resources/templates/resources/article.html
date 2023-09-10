@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}<title>Resources</title>{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <p class="h1 text-primary mt-4 mb-3">{{ article.title }}</p>
+    </div>
+    <div class="row">
+        <p class="text-secondary">Published {{ article.created }} by {{ article.author }}</p>
+    </div>
+    {% if request.user == article.author %}
+    <div class="row mb-3">
+        <a class="btn btn-primary btn-sm mr-2" href="{% url 'resources:edit_article' article.id %}" role="button">Edit article</a>
+        <a class="btn btn-danger btn-sm" href="{% url 'resources:delete_article'  article.id %}" role="button">Delete article</a>
+    </div>
+    {% endif %}
+    <div class="row">
+        <img src="{{ article.image.url }}" alt="{{article.title}}" width="600" height="300" >
+    </div>
+    <div class="row mt-3">
+        {{ article.body|linebreaks }}
+    </div>
+    
+    <div class="row">
+    <div class="col">
+    {% with comments.count as total_comments %}
+    <p class="text-primary"> {{ total_comments }} comment{{ total_comments|pluralize }}  | {{article.get_like_no}} <a href="{% url 'resources:like' article.id %}"><i class="fa fa-thumbs-up" style="font-size:24px"></i></a></p>
+    {% endwith %}
+    </div>
+    </div>
+
+    {% if comments %}
+    {% for comment in comments %}
+    <div class="row mb-3 bg-white">
+        <div class="col-10">
+        <p class= "mb-0 text-capitalize"> <span class="font-weight-bold"><a href="{% url 'user_detail' comment.author.username %}">
+
+        {{ comment.author }}</a> </span><span class="text-secondary">({{ comment.created }})</span></p>
+        <span class="font-italic">{{ comment.body }}</span>
+        </div>
+        <div class="col-2">
+            {% if request.user == comment.author %}
+            <a class="btn btn-danger btn-sm mt-2" href="{% url 'resources:delete_comment' comment.id %}" role="button">Delete comment</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="row mt-4">
+        <div class="col">
+        <p class="font-weight-bold mb-1">Add a new comment</p>
+        <form action='{% url "resources:article_comment" article.id %}' method="post">
+        {{ form|crispy }}
+        {% csrf_token %}
+        <input type="submit" class="btn btn-primary btn-sm mb-2" value="Post">
+        <a class="btn btn-warning btn-sm mr-2 mb-2" href="{% url 'resources:article_list' %}">Cancel</a>
+        </form>
+        </div>
+    </div>
+
+
+</div>
+{% endblock content %}

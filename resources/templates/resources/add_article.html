@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}<title>Resources</title>{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <p class="h1 text-primary mt-4 mb-3">Write an article</p>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input class="btn btn-primary" type="submit" value="Post">
+        <a class="btn btn-warning mr-2" href="{% url 'resources:article_list' %}">Cancel</a>
+      </form>
+
+
+</div>
+{% endblock content %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}<title>Resources</title>{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <p class="h1 text-primary mt-4 mb-3">Resources</p>
+    </div>
+    <div class="row">
+        <p class="text-secondary font-italic">Woule you like to give some tips to career switchers? Click <a href="{% url 'resources:add_article' %}">here</a> to write an article.</p>
+    </div>
+
+    {% for article in articles %}
+    <div class="row mb-2">
+    <div class="col"> 
+        <div class="row">
+            <div class="col-10">
+                <p class="font-weight-bold h4"><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></p>
+                <p class="text-secondary">Published {{ article.created }} by {{ article.author }}</p>
+            </div>
+            <div class="col-2">
+                {% with article.comments.count as total_comments %}
+                <p class="text-primary"> {{ total_comments }} comment{{ total_comments|pluralize }}  | {{article.get_like_no}} <i class="fa fa-thumbs-up" style="font-size:24px"></i></p>
+                {% endwith %}
+            </div>
+        </div>
+    
+        <div class="row">
+            <div class="col-2">
+                <img src="{{ article.image.url }}" alt="{{article.title}}"  width="150" height="80">
+            </div>
+            <div class="col-10">
+                {{ article.body|truncatewords:50|linebreaks }}
+            </div>
+        </div>
+   
+    </div>
+    </div>
+    <hr/>
+    {% endfor %}
+<div class="row my-3">    
+{% include "resources/pagination.html" with page=articles %}  
+</div> 
+</div>
+
+{% endblock content %}
