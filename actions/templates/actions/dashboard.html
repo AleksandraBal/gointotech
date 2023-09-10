@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}<title>Home</title>{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <p class="h1 text-primary mt-4">What is happening?</p>
+  </div>  
+    {% for action in actions %}
+    {% include "actions/action.html" %}
+    {% endfor %}
+
+
+    <div class="row my-3">    
+      {% include "actions/pagination.html" with page=actions %}  
+    </div> 
+</div>
+{% endblock %}
