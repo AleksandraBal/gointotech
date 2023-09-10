@@ -25,6 +25,7 @@ def article_list(request):
     return render(request, 'resources/article_list.html', {'articles': articles})
 
 # Display one  article
+@login_required
 def article_detail(request, year, month, day, article):
     article = get_object_or_404(Article, slug=article,
                              created__year=year,
@@ -37,6 +38,7 @@ def article_detail(request, year, month, day, article):
     return render(request, 'resources/article.html', {'article': article, 'comments': comments, 'form': form})
 
 # Add a comment to an article
+@login_required
 @require_POST
 def article_comment(request, article_id):
     article = get_object_or_404(Article, id=article_id)
